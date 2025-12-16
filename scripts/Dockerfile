@@ -1,4 +1,4 @@
-FROM debian:sid as builder
+FROM debian:bookworm as builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 

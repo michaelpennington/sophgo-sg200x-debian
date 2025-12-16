@@ -38,7 +38,7 @@ NPROCS := $(shell nproc)
 $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b sg200x-dev --depth 7 https://github.com/sophgo/linux_5.10.git /build/kernel
+	@git clone -b sg200x-dev --depth 25 https://github.com/sophgo/linux_5.10.git /build/kernel
 	@cd $(BUILDDIR)/kernel && git checkout 8b8fbf8
 	@touch $@
 
@@ -79,7 +79,7 @@ linux-clean:
 $(BUILDDIR)/uboot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out U-Boot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone --depth 1 https://github.com/sophgo/u-boot-2021.10.git $(BUILDDIR)/u-boot
+	@git clone --depth 15 https://github.com/sophgo/u-boot-2021.10.git $(BUILDDIR)/u-boot
 	@cd $(BUILDDIR)/u-boot && git checkout 4a21b6b
 	@touch $@
 
@@ -122,7 +122,7 @@ uboot-clean:
 $(BUILDDIR)/opensbi-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OpenSBI for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b sg200x-dev --depth 4 https://github.com/sophgo/opensbi.git $(BUILDDIR)/opensbi
+	@git clone -b sg200x-dev --depth 7 https://github.com/sophgo/opensbi.git $(BUILDDIR)/opensbi
 	@cd $(BUILDDIR)/opensbi && git checkout 216793f
 #	git clone https://github.com/riscv-software-src/opensbi.git $(BUILDDIR)/opensbi
 #	@cd $(BUILDDIR)/opensbi && git checkout a2b255b
@@ -151,7 +151,7 @@ opensbi-clean:
 $(BUILDDIR)/fsbl-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out FSBL for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b sg200x-dev --depth 1 https://github.com/sophgo/fsbl.git $(BUILDDIR)/fsbl
+	@git clone -b sg200x-dev --depth 15 https://github.com/sophgo/fsbl.git $(BUILDDIR)/fsbl
 	@cd $(BUILDDIR)/fsbl && git checkout 15a84c5
 	@touch $@
 
@@ -165,7 +165,7 @@ $(BUILDDIR)/fsbl-prepare-patch-stamp: $(BUILDDIR)/fsbl-prepare-checkout-stamp
 
 $(BUILDDIR)/fsbl-compile-stamp: $(BUILDDIR)/fsbl-prepare-patch-stamp $(BUILDDIR)/opensbi-compile-stamp $(BUILDDIR)/uboot-compile-stamp
 	@echo "$(COLOUR_GREEN)Building FSBL for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/fsbl && OD_CLK_SEL=y $(MAKE) -j$(NPROCS) ARCH=$(ARCH) CHIP_ARCH=$(CHIP) BOOT_CPU=$(BOOT_CPU) DDR_CFG=$(DDR_CFG) RTOS_ENABLE_FREERTOS=y BLCP_2ND_PATH=$(BUILDDIR)/fsbl/blank.bin LOADER_2ND_PATH=$(BUILDDIR)/u-boot.bin \
+	@cd $(BUILDDIR)/fsbl && OD_CLK_SEL=y $(MAKE) -j$(NPROCS) ARCH=$(ARCH) CHIP_ARCH=$(CHIP) BOOT_CPU=$(BOOT_CPU) DDR_CFG=$(DDR_CFG) RTOS_ENABLE_FREERTOS=n BLCP_2ND_PATH=$(BUILDDIR)/fsbl/blank.bin LOADER_2ND_PATH=$(BUILDDIR)/u-boot.bin \
     CROSS_COMPILE=/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl- 
 	@cp $(BUILDDIR)/fsbl/build/$(CHIP)/fip.bin $(BUILDDIR)
 	@touch $@
